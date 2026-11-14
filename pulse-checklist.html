@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>Pulse Checklist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f4f5f6;
+    --surface:#ffffff;
+    --surface-2:#eceef0;
+    --text:#14181d;
+    --muted:#5d6876;
+    --line:#dde1e6;
+    --accent:#e63a17;
+    --accent-soft:#fdeee9;
+    --accent-ink:#ffffff;
+    --tech:#0a7c6e;
+    --testing:#b45309;
+    --marketing:#e63a17;
+    --content:#b4236b;
+    --events:#1d5fc4;
+    --ops:#4a5a3a;
+    --shadow:0 1px 2px rgba(16,24,40,.06), 0 8px 24px rgba(16,24,40,.06);
+    color-scheme: light dark;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#0e1116;
+      --surface:#171b22;
+      --surface-2:#21262f;
+      --text:#f1f3f5;
+      --muted:#9aa5b3;
+      --line:#282f3a;
+      --accent:#ff5a36;
+      --accent-soft:#2e1a14;
+      --tech:#2dd4bf;
+      --testing:#fbbf24;
+      --marketing:#ff6b4a;
+      --content:#f472b6;
+      --events:#60a5fa;
+      --ops:#a3b86b;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.25);
+    }
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:"Manrope",system-ui,-apple-system,Segoe UI,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+  button,[role="button"],select,input:not([type="checkbox"]){min-height:44px}
+  a{color:inherit}
+  .wrap{max-width:980px;margin:0 auto;padding:20px 18px 56px}
+  /* Hero */
+  .hero{display:flex;gap:20px;align-items:flex-start;justify-content:space-between;padding:10px 0 6px}
+  .hero-left{flex:1;min-width:0}
+  .pulse-mark{display:inline-flex;align-items:center;gap:8px;font-family:"Sora",sans-serif;font-weight:800;letter-spacing:-.02em;font-size:15px;text-transform:uppercase}
+  .pulse-dot{width:10px;height:10px;border-radius:999px;background:var(--accent);box-shadow:0 0 0 5px var(--accent-soft);flex:none}
+  h1{font-family:"Sora",sans-serif;font-size:clamp(32px,6vw,52px);line-height:.95;letter-spacing:-.04em;margin:14px 0 10px;font-weight:800}
+  h1 span{color:var(--accent)}
+  .lede{color:var(--muted);font-size:17px;line-height:1.55;max-width:560px;margin:0}
+  .lede strong{color:var(--text)}
+  .progress-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:16px;display:flex;gap:16px;align-items:center;min-width:218px}
+  .ring{width:76px;height:76px;flex:none;position:relative}
+  .ring svg{transform:rotate(-90deg)}
+  .ring-bg{stroke:var(--surface-2)}
+  .ring-fg{stroke:var(--accent);transition:stroke-dashoffset .35s ease}
+  .ring-label{position:absolute;inset:0;display:grid;place-items:center;font-family:"Sora",sans-serif;font-weight:800;font-size:18px}
+  .progress-meta b{display:block;font-family:"Sora",sans-serif;font-size:15px;line-height:1.2}
+  .progress-meta span{color:var(--muted);font-size:13px;line-height:1.4;display:block;margin-top:4px}
+  .bar{height:8px;background:var(--surface-2);border-radius:999px;overflow:hidden;margin-top:18px}
+  .bar i{display:block;height:100%;background:var(--accent);border-radius:999px;transition:width .35s ease;width:0%}
+
+  /* Sync status */
+  .sync{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:13px;font-weight:700;color:var(--muted)}
+  .sync .sdot{width:8px;height:8px;border-radius:999px;background:var(--muted);flex:none}
+  .sync.ok .sdot{background:var(--tech)}
+  .sync.busy .sdot{background:var(--testing)}
+  .sync.err{color:#b42318}
+  .sync.err .sdot{background:#b42318}
+  @media (prefers-color-scheme: dark){ .sync.err{color:#fda29b} .sync.err .sdot{background:#fda29b} }
+  .sync button{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:4px 12px;font:700 13px "Manrope",sans-serif;cursor:pointer;min-height:32px}
+
+  /* Controls */
+  .controls{padding:14px 0 10px;margin-top:18px;border-bottom:1px solid var(--line)}
+  .search{position:relative}
+  .search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)}
+  .search input{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:12px 16px 12px 42px;font:600 15px "Manrope",sans-serif;outline:none}
+  .search input:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+  .pill{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:9px 14px;font:700 14px "Manrope",sans-serif;cursor:pointer;display:inline-flex;align-items:center;gap:7px;min-height:40px}
+  .pill .count{font-size:12px;background:var(--surface-2);border-radius:999px;padding:2px 7px;line-height:1.3}
+  .pill[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+  .pill[aria-pressed="true"] .count{background:rgba(255,255,255,.18);color:inherit}
+  @media (prefers-color-scheme: dark){ .pill[aria-pressed="true"] .count{background:rgba(0,0,0,.25)} }
+  .dot{width:8px;height:8px;border-radius:999px;flex:none}
+
+  /* Add task */
+  .add-card{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:16px;margin-top:18px}
+  .add-card h2{font-family:"Sora",sans-serif;font-size:16px;margin:0 0 4px;letter-spacing:-.01em}
+  .add-card p{margin:0 0 12px;color:var(--muted);font-size:14px}
+  .add-grid{display:grid;grid-template-columns:1fr 170px 130px;gap:10px}
+  .add-grid input,.add-grid select{width:100%;border:1px solid var(--line);background:var(--bg);color:var(--text);border-radius:10px;padding:11px 12px;font:600 15px "Manrope",sans-serif}
+  .btn{border:0;border-radius:10px;padding:11px 16px;font:800 15px "Manrope",sans-serif;cursor:pointer;background:var(--accent);color:var(--accent-ink);min-height:44px}
+  .btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.55;cursor:default}
+  .btn-ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
+  .add-msg{font-size:13px;color:var(--tech);font-weight:700;margin-top:10px;min-height:18px}
+  .add-msg.err{color:#b42318}
+  @media (prefers-color-scheme: dark){ .add-msg.err{color:#fda29b} }
+
+  /* Sections */
+  .section{margin-top:28px}
+  .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:12px}
+  .section-head h2{font-family:"Sora",sans-serif;font-size:22px;letter-spacing:-.03em;margin:0;display:flex;align-items:center;gap:10px}
+  .section-head p{margin:2px 0 0;color:var(--muted);font-size:14px}
+  .section-meta{font-size:13px;font-weight:800;color:var(--muted);white-space:nowrap;padding-bottom:2px}
+  .mini-bar{height:5px;background:var(--surface-2);border-radius:999px;overflow:hidden;margin-top:10px}
+  .mini-bar i{display:block;height:100%;border-radius:999px}
+
+  .tasks{display:grid;gap:10px}
+  .task{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:6px 14px 6px 6px;display:flex;gap:6px;align-items:flex-start;box-shadow:0 1px 1px rgba(16,24,40,.03)}
+  .check{width:48px;height:48px;flex:none;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;border-radius:10px;padding:0}
+  .check:disabled{cursor:default;opacity:.6}
+  .box{width:26px;height:26px;border-radius:7px;border:2px solid var(--line);background:var(--bg);display:grid;place-items:center;color:transparent;transition:.15s}
+  .check svg{width:15px;height:15px}
+  .task.done .box{background:var(--accent);border-color:var(--accent);color:#fff}
+  .task-body{flex:1;min-width:0;padding:10px 0 12px}
+  .task-title{font-weight:800;font-size:15.5px;line-height:1.35}
+  .task.done .task-title{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1.5px}
+  .task-note{color:var(--muted);font-size:14px;line-height:1.5;margin-top:3px}
+  .task.done .task-note{color:var(--muted);opacity:.75}
+  .task-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
+  .tag{font-size:12px;font-weight:800;letter-spacing:.01em;border-radius:999px;padding:4px 8px;background:var(--surface-2);color:var(--text)}
+  .prio{font-size:12px;font-weight:800;border-radius:999px;padding:4px 8px}
+  .prio-high{background:#fef2f2;color:#b42318;border:1px solid #fecdc2}
+  @media (prefers-color-scheme: dark){ .prio-high{background:#2a1512;color:#fda29b;border-color:#5a2a22} }
+  .remove{border:0;background:transparent;color:var(--muted);font:700 13px "Manrope",sans-serif;cursor:pointer;padding:10px 6px;min-height:44px;align-self:center}
+  .remove:hover{color:var(--accent)}
+  .remove:disabled{opacity:.55;cursor:default}
+
+  .empty{background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:28px 18px;text-align:center;color:var(--muted)}
+  .empty b{color:var(--text);display:block;font-family:"Sora",sans-serif;margin-bottom:4px}
+
+  .footer-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+  .tip{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:22px;display:flex;gap:14px}
+  .tip-icon{width:40px;height:40px;border-radius:10px;background:var(--accent-soft);display:grid;place-items:center;flex:none;font-size:20px}
+  .tip h3{margin:0 0 4px;font-family:"Sora",sans-serif;font-size:15px}
+  .tip p{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
+
+  @media (max-width:700px){
+    .hero{flex-direction:column}
+    .progress-card{width:100%}
+    .add-grid{grid-template-columns:1fr}
+    .section-head{align-items:flex-start;flex-direction:column;gap:4px}
+  }
+  @media print{
+    .controls,.add-card,.footer-actions,.remove,.sync{display:none!important}
+    body{background:#fff}
+    .task,.progress-card{box-shadow:none}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none!important;scroll-behavior:auto!important}
+  }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="hero">
+    <div class="hero-left">
+      <div class="pulse-mark"><span class="pulse-dot"></span> Pulse</div>
+      <h1>Launch<br>checklist<span>.</span></h1>
+      <p class="lede">Everything that needs doing for Pulse — <strong>tech, testing, marketing, content, events and ops</strong> — in one easy list. Tap a box as you finish each job.</p>
+      <div class="sync" id="syncStatus" role="status"><span class="sdot" aria-hidden="true"></span><span id="syncText">Loading the shared checklist…</span></div>
+      <div class="bar" aria-hidden="true"><i id="barFill"></i></div>
+    </div>
+    <div class="progress-card" aria-live="polite">
+      <div class="ring">
+        <svg width="76" height="76" viewBox="0 0 76 76" aria-hidden="true">
+          <circle class="ring-bg" cx="38" cy="38" r="32" fill="none" stroke-width="8"/>
+          <circle id="ringFg" class="ring-fg" cx="38" cy="38" r="32" fill="none" stroke-width="8" stroke-linecap="round" stroke-dasharray="201" stroke-dashoffset="201"/>
+        </svg>
+        <div class="ring-label" id="ringPct">–</div>
+      </div>
+      <div class="progress-meta">
+        <b id="progressTitle">Loading…</b>
+        <span id="progressSub">Fetching the latest ticks from the shared board.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="searchInput" type="search" placeholder="Search tasks — try “Instagram”, “venue”, “test”…" autocomplete="off" />
+    </div>
+    <div class="filters" id="filters" role="group" aria-label="Filter by category"></div>
+  </div>
+
+  <section class="add-card" aria-labelledby="addTitle">
+    <h2 id="addTitle">Add a task</h2>
+    <p>Something new come up? Drop it in here and tag it so it lands in the right section — it saves for the whole crew.</p>
+    <form id="addForm" class="add-grid">
+      <input id="newTitle" type="text" placeholder="e.g. Confirm DJ set times for Friday" maxlength="120" required />
+      <select id="newCat" aria-label="Category">
+        <option value="tech">Tech</option>
+        <option value="testing">Testing</option>
+        <option value="marketing">Marketing</option>
+        <option value="content">Content</option>
+        <option value="events">Events &amp; Venues</option>
+        <option value="ops">Ops</option>
+      </select>
+      <button class="btn" id="addBtn" type="submit">Add task</button>
+    </form>
+    <div class="add-msg" id="addMsg" role="status"></div>
+  </section>
+
+  <div id="list"><div class="empty"><b>Loading…</b>Getting the shared checklist.</div></div>
+
+  <div class="tip">
+    <div class="tip-icon" aria-hidden="true">◎</div>
+    <div>
+      <h3>How to run this each week</h3>
+      <p><strong style="color:var(--text)">Monday:</strong> add anything new and re-order by priority. <strong style="color:var(--text)">Before you post or ship:</strong> clear Testing. <strong style="color:var(--text)">Friday:</strong> work through Events &amp; Ops before doors. If a section is stuck at 0%, that’s the blocker to talk about in the check-in.</p>
+    </div>
+  </div>
+
+  <div class="footer-actions">
+    <button class="btn btn-ghost" id="resetBtn" type="button">Reset all checks</button>
+    <button class="btn btn-ghost" id="clearDoneBtn" type="button">Hide completed</button>
+  </div>
+</main>
+
+<script>
+"use strict";
+
+/* ================================================================
+   Pulse Checklist — shared crew board.
+   Tasks, ticks, adds and removals live in the Supabase project
+   (table: checklist_items) so they persist across reloads and stay
+   in sync for everyone who opens the link. No sign-in: anyone with
+   the link can tick, add, or remove items.
+   The table stores title / tag (category label) / done / position;
+   the notes and High-priority flags for the 32 starter tasks live
+   here, keyed by title + category, and are re-attached on load.
+   ================================================================ */
+
+var SB_URL = "https://iwglronqqiescekkfvhr.supabase.co";
+var SB_KEY = "sb_publishable_fWBN51ujRoulapGmSfc9Ow_6gfpVvz2";
+var TABLE = "checklist_items";
+
+var CATS = {
+  tech:      { label:"Tech", color:"var(--tech)", desc:"Site, domain, search, booking links and the tools underneath Pulse." },
+  testing:   { label:"Testing", color:"var(--testing)", desc:"Try it like a first-time user would — on a real phone, end to end." },
+  marketing: { label:"Marketing", color:"var(--marketing)", desc:"Get the word out: drops, social, video and collaborations." },
+  content:   { label:"Content", color:"var(--content)", desc:"Captions, images, handles and tags — ready before you hit post." },
+  events:    { label:"Events & Venues", color:"var(--events)", desc:"Pilot night, venues, DJs and the door plan." },
+  ops:       { label:"Ops", color:"var(--ops)", desc:"Crew, costs, inbox and the weekly rhythm that keeps it moving." }
+};
+var ORDER = ["tech","testing","marketing","content","events","ops"];
+var LABEL_TO_CAT = {};
+ORDER.forEach(function(k){ LABEL_TO_CAT[CATS[k].label] = k; });
+
+var STARTERS = [
+  // Tech
+  {cat:"tech", title:"Verify partypulse.us email", note:"Send a test to the new domain and confirm inbound works before you publish the address anywhere.", prio:"high"},
+  {cat:"tech", title:"Test Pulse search — Seattle, this week, EDM", note:"Run the search and check results load, dates are right, and nothing errors.", prio:"high"},
+  {cat:"tech", title:"Check every booking / RSVP link", note:"Open the ticket link from a few night cards and confirm each one lands on the right event.", prio:"high"},
+  {cat:"tech", title:"Confirm the website loads fast on mobile", note:"Open partypulse.web.app on your phone on data (not Wi-Fi) — it should feel instant.", prio:""},
+  {cat:"tech", title:"Check the contacts database is healthy", note:"Open the crew contacts tracker and confirm sign-in and the list still load.", prio:""},
+  {cat:"tech", title:"Back up this week's assets", note:"Save flyers, the Reel, captions and the contacts export somewhere the crew can reach.", prio:""},
+
+  // Testing
+  {cat:"testing", title:"End-to-end test: search → night → booking", note:"Do the full journey on your phone as if you'd never seen Pulse before.", prio:"high"},
+  {cat:"testing", title:"Test on iPhone and Android", note:"Layout, tap targets, scrolling and dark mode on both — not just the phone you carry.", prio:"high"},
+  {cat:"testing", title:"Test the awkward cases", note:"No results for a search, a sold-out night, and a past date — each should say something helpful.", prio:""},
+  {cat:"testing", title:"Link check across everything", note:"Instagram bio, website, email and Meetup links — tap every single one.", prio:""},
+  {cat:"testing", title:"Quick accessibility pass", note:"Text is readable in bright light, images have alt text, you can tab through in order.", prio:""},
+  {cat:"testing", title:"60-second pilot dry run", note:"Ask 3 crew members to find a Friday night they'd actually go to in under 60 seconds. Note where they hesitate.", prio:""},
+
+  // Marketing
+  {cat:"marketing", title:"Schedule the “This Weekend in Seattle” pack", note:"Weekly drop email, Reel, story flyers and carousel — all queued, not just drafted.", prio:"high"},
+  {cat:"marketing", title:"Instagram cadence for @pulse.nightlife.app", note:"3 feed posts and daily stories this week. Consistency beats one big push.", prio:"high"},
+  {cat:"marketing", title:"Cut the next Ask Pulse video", note:"30 seconds, 9:16, real screen recording. Open on the doom-scrolling problem, not a logo.", prio:""},
+  {cat:"marketing", title:"DM 10 Seattle nightlife / EDM accounts", note:"Short, specific pitch for a collab post — name the night, not just “let's collab”.", prio:""},
+  {cat:"marketing", title:"Cross-post the weekend drop", note:"Same drop to Meetup and WhatsApp so no community only sees it in one place.", prio:""},
+  {cat:"marketing", title:"Review last drop before the next one", note:"Note saves, shares and link clicks. Do more of what worked, drop what didn't.", prio:""},
+
+  // Content
+  {cat:"content", title:"Write captions and check every handle", note:"DJ and venue handles typed exactly right on every flyer and caption — one wrong @ is a missed tag.", prio:"high"},
+  {cat:"content", title:"Photo check", note:"Only venue / DJ-approved images, no blurry crops, nothing stretched.", prio:""},
+  {cat:"content", title:"Add location + genre tags", note:"Seattle location and genre tags on every post so new people can find it.", prio:""},
+  {cat:"content", title:"Build a backup content bank", note:"Save 5 ready-to-post stories for quiet days so the account never goes dark.", prio:""},
+
+  // Events
+  {cat:"events", title:"Lock the pilot venue in writing", note:"Date, capacity and entry flow confirmed — not just a verbal yes.", prio:"high"},
+  {cat:"events", title:"Confirm the DJ lineup", note:"Set times, fee and promo assets received from every DJ on the bill.", prio:"high"},
+  {cat:"events", title:"Write the door plan", note:"Who checks the RSVP list, and exactly what happens when the room is full.", prio:""},
+  {cat:"events", title:"Follow up open leads", note:"Work the contacts tracker: DJs, venues and hosts who haven't replied yet get one nudge.", prio:""},
+  {cat:"events", title:"Post-event recap", note:"Photos, rough attendance, and a short list of what to repeat and what to drop next time.", prio:""},
+
+  // Ops
+  {cat:"ops", title:"Set crew roles for launch week", note:"One owner each for tech, content, door and DMs — no job owned by “everyone”.", prio:"high"},
+  {cat:"ops", title:"Hold the 20-minute Pulse check-in", note:"Blockers, owners, deadlines. End with who does what by when.", prio:""},
+  {cat:"ops", title:"Costs check", note:"Confirm free / low-cost tools are still active and no trial is about to auto-renew.", prio:""},
+  {cat:"ops", title:"Inbox zero", note:"Reply to DMs, venue emails and DJ messages — nothing left hanging over 24 hours.", prio:""},
+  {cat:"ops", title:"Prep next week by Monday", note:"Draft the outline for next weekend's pack so Tuesday isn't a scramble.", prio:""}
+];
+
+var STARTER_META = {};
+STARTERS.forEach(function(s){ STARTER_META[s.title + "|" + CATS[s.cat].label] = s; });
+
+/* ---------------- state ---------------- */
+var TASKS = [];            // {id, cat, title, note, prio, done}
+var loaded = false;        // true once the first fetch (or fallback) lands
+var online = true;         // false when the board couldn't be reached
+var busyIds = {};          // task id -> true while a save is in flight
+var activeFilter = "all";
+var query = "";
+var hideDone = false;
+
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+
+/* ---------------- Supabase REST ---------------- */
+function sb(path, options){
+  options = options || {};
+  var headers = {
+    "apikey": SB_KEY,
+    "Authorization": "Bearer " + SB_KEY,
+    "Content-Type": "application/json"
+  };
+  if(options.prefer) headers["Prefer"] = options.prefer;
+  return fetch(SB_URL + "/rest/v1/" + path, {
+    method: options.method || "GET",
+    headers: headers,
+    body: options.body ? JSON.stringify(options.body) : undefined
+  }).then(function(res){
+    return res.text().then(function(text){
+      var data = null;
+      try { data = text ? JSON.parse(text) : null; } catch(e) { /* keep null */ }
+      if(!res.ok){
+        var msg = (data && data.message) ? data.message : "Request failed (" + res.status + ")";
+        throw new Error(msg);
+      }
+      return data;
+    });
+  });
+}
+
+function rowToTask(row){
+  var cat = LABEL_TO_CAT[row.tag] || "ops";
+  var meta = STARTER_META[row.title + "|" + row.tag];
+  return {
+    id: row.id,
+    cat: cat,
+    title: row.title,
+    note: meta ? meta.note : "",
+    prio: meta ? meta.prio : "",
+    done: !!row.done
+  };
+}
+
+function fetchRows(){
+  return sb(TABLE + "?select=id,title,tag,done,position,created_at&order=position.asc,created_at.asc");
+}
+
+function seedStarters(){
+  var rows = STARTERS.map(function(s, i){
+    return { title: s.title, tag: CATS[s.cat].label, done: false, position: i };
+  });
+  return sb(TABLE, { method:"POST", prefer:"return=representation", body: rows });
+}
+
+function loadChecklist(showBusy){
+  if(showBusy) setSync("busy", "Refreshing…");
+  return fetchRows().then(function(rows){
+    if(rows && rows.length){
+      TASKS = rows.map(rowToTask);
+      loaded = true; online = true;
+      setSync("ok", "Shared board — saved for everyone with the link");
+      render();
+      return;
+    }
+    // Empty table: seed the starter list, then re-read what's actually there
+    // (guards against two people seeding at the same moment).
+    return seedStarters().then(function(){
+      return fetchRows();
+    }).then(function(seeded){
+      TASKS = (seeded || []).map(rowToTask);
+      loaded = true; online = true;
+      setSync("ok", "Shared board — saved for everyone with the link");
+      render();
+    });
+  }).catch(function(err){
+    if(!loaded){
+      // First load failed: show the starter list so the page is still
+      // readable, but be explicit that ticks won't save.
+      TASKS = STARTERS.map(function(s, i){
+        return { id:"local-" + i, cat:s.cat, title:s.title, note:s.note, prio:s.prio, done:false };
+      });
+      loaded = true; online = false;
+    }
+    setSyncError("Couldn't reach the shared board — ticks won't save right now. Tap to retry.");
+    render();
+  });
+}
+
+/* ---------------- sync status ---------------- */
+function setSync(state, text){
+  var el = document.getElementById("syncStatus");
+  el.className = "sync " + state;
+  el.innerHTML = '<span class="sdot" aria-hidden="true"></span><span>' + esc(text) + "</span>";
+}
+function setSyncError(text){
+  var el = document.getElementById("syncStatus");
+  el.className = "sync err";
+  el.innerHTML = '<span class="sdot" aria-hidden="true"></span><span>' + esc(text) + '</span> <button type="button" id="syncRetry">Retry</button>';
+  document.getElementById("syncRetry").addEventListener("click", function(){ loadChecklist(true); });
+}
+
+/* ---------------- progress ---------------- */
+function counts(){
+  var d = 0;
+  TASKS.forEach(function(t){ if(t.done) d++; });
+  return { total: TASKS.length, done: d };
+}
+function updateProgress(){
+  var c = counts();
+  var pct = c.total ? Math.round(c.done / c.total * 100) : 0;
+  document.getElementById("ringPct").textContent = pct + "%";
+  document.getElementById("progressTitle").textContent = c.done + " of " + c.total + " done";
+  document.getElementById("barFill").style.width = pct + "%";
+  var circ = 201;
+  document.getElementById("ringFg").style.strokeDashoffset = String(circ - circ * pct / 100);
+  var sub = document.getElementById("progressSub");
+  if(pct === 100) sub.textContent = "All clear. Nice work — time to prep next week.";
+  else if(pct >= 50) sub.textContent = "Past halfway. Testing and Events are where launches slip — keep an eye there.";
+  else if(c.done > 0) sub.textContent = "Good start. Knock out the High priority jobs first.";
+  else sub.textContent = "Start with the High priority jobs in Tech & Testing.";
+}
+
+/* ---------------- render ---------------- */
+function renderFilters(){
+  var wrap = document.getElementById("filters");
+  wrap.innerHTML = "";
+  var defs = [{key:"all", label:"All", color:"var(--accent)"}].concat(ORDER.map(function(k){ return {key:k, label:CATS[k].label, color:CATS[k].color}; }));
+  defs.forEach(function(f){
+    var n = f.key === "all" ? TASKS.length : TASKS.filter(function(t){ return t.cat === f.key; }).length;
+    var b = document.createElement("button");
+    b.type = "button"; b.className = "pill"; b.setAttribute("aria-pressed", activeFilter === f.key ? "true" : "false");
+    b.innerHTML = '<span class="dot" style="background:' + f.color + '"></span>' + esc(f.label) + ' <span class="count">' + n + "</span>";
+    b.addEventListener("click", function(){ activeFilter = f.key; render(); });
+    wrap.appendChild(b);
+  });
+}
+
+function visibleTasks(cat){
+  return TASKS.filter(function(t){
+    if(t.cat !== cat) return false;
+    if(activeFilter !== "all" && activeFilter !== cat) return false;
+    if(hideDone && t.done) return false;
+    if(query){
+      var q = query.toLowerCase();
+      var hay = (t.title + " " + (t.note || "") + " " + CATS[t.cat].label).toLowerCase();
+      if(hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+}
+
+function render(){
+  renderFilters();
+  updateProgress();
+  var list = document.getElementById("list");
+  list.innerHTML = "";
+  var any = false;
+  ORDER.forEach(function(cat){
+    var items = visibleTasks(cat);
+    if(activeFilter !== "all" && activeFilter !== cat) return;
+    if(!items.length) return;
+    any = true;
+    var catTasks = TASKS.filter(function(t){ return t.cat === cat; });
+    var catDone = catTasks.filter(function(t){ return t.done; }).length;
+    var pct = catTasks.length ? Math.round(catDone / catTasks.length * 100) : 0;
+
+    var sec = document.createElement("section");
+    sec.className = "section";
+    sec.setAttribute("aria-label", CATS[cat].label);
+    sec.innerHTML =
+      '<div class="section-head"><div><h2><span class="dot" style="background:' + CATS[cat].color + ';width:11px;height:11px"></span>' + esc(CATS[cat].label) + "</h2><p>" + esc(CATS[cat].desc) + '</p><div class="mini-bar"><i style="width:' + pct + "%;background:" + CATS[cat].color + '"></i></div></div><div class="section-meta">' + catDone + " / " + catTasks.length + " done</div></div>";
+
+    var box = document.createElement("div"); box.className = "tasks";
+    items.forEach(function(t){
+      var busy = !!busyIds[t.id];
+      var row = document.createElement("article");
+      row.className = "task" + (t.done ? " done" : "");
+      row.innerHTML =
+        '<button class="check" type="button" ' + (busy ? "disabled" : "") + ' aria-pressed="' + (t.done ? "true" : "false") + '" aria-label="' + (t.done ? "Mark not done: " : "Mark done: ") + esc(t.title) + '"><span class="box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg></span></button>' +
+        '<div class="task-body"><div class="task-title">' + esc(t.title) + "</div>" + (t.note ? '<div class="task-note">' + esc(t.note) + "</div>" : "") +
+        '<div class="task-tags"><span class="tag" style="color:' + CATS[t.cat].color + '">' + esc(CATS[t.cat].label) + "</span>" + (t.prio === "high" ? '<span class="prio prio-high">High priority</span>' : "") + "</div></div>" +
+        '<button class="remove" type="button" ' + (busy ? "disabled" : "") + ">Remove</button>";
+      row.querySelector(".check").addEventListener("click", function(){ toggleTask(t); });
+      row.querySelector(".remove").addEventListener("click", function(){ removeTask(t, row); });
+      box.appendChild(row);
+    });
+    sec.appendChild(box);
+    list.appendChild(sec);
+  });
+  if(!any){
+    var e = document.createElement("div"); e.className = "empty";
+    e.innerHTML = "<b>Nothing matches</b>Try a different search or filter — or add it as a new task above.";
+    list.appendChild(e);
+  }
+}
+
+/* ---------------- mutations ---------------- */
+function toggleTask(t){
+  if(busyIds[t.id]) return;
+  if(!online || String(t.id).indexOf("local-") === 0){
+    setSyncError("You're offline from the shared board — that tick can't save. Tap to retry.");
+    return;
+  }
+  var next = !t.done;
+  busyIds[t.id] = true;
+  t.done = next;               // optimistic
+  setSync("busy", "Saving…");
+  render();
+  sb(TABLE + "?id=eq." + encodeURIComponent(t.id), {
+    method: "PATCH", prefer: "return=representation", body: { done: next }
+  }).then(function(rows){
+    if(rows && rows.length) t.done = !!rows[0].done;
+    delete busyIds[t.id];
+    setSync("ok", "Shared board — saved for everyone with the link");
+    render();
+  }).catch(function(){
+    t.done = !next;            // roll back
+    delete busyIds[t.id];
+    setSyncError("Couldn't save that tick — tap to retry syncing.");
+    render();
+  });
+}
+
+function removeTask(t, rowEl){
+  if(busyIds[t.id]) return;
+  if(!online || String(t.id).indexOf("local-") === 0){
+    setSyncError("You're offline from the shared board — removals can't save. Tap to retry.");
+    return;
+  }
+  var btn = rowEl ? rowEl.querySelector(".remove") : null;
+  if(btn){ btn.disabled = true; btn.textContent = "Removing…"; }
+  busyIds[t.id] = true;
+  setSync("busy", "Saving…");
+  sb(TABLE + "?id=eq." + encodeURIComponent(t.id), { method: "DELETE" }).then(function(){
+    TASKS = TASKS.filter(function(x){ return x.id !== t.id; });
+    delete busyIds[t.id];
+    setSync("ok", "Shared board — saved for everyone with the link");
+    render();
+  }).catch(function(){
+    delete busyIds[t.id];
+    setSyncError("Couldn't remove that task — tap to retry syncing.");
+    render();
+  });
+}
+
+document.getElementById("searchInput").addEventListener("input", function(e){ query = e.target.value.trim(); render(); });
+
+document.getElementById("addForm").addEventListener("submit", function(e){
+  e.preventDefault();
+  var titleEl = document.getElementById("newTitle");
+  var title = titleEl.value.trim();
+  var cat = document.getElementById("newCat").value;
+  var msg = document.getElementById("addMsg");
+  var btn = document.getElementById("addBtn");
+  if(!title) return;
+  if(!online){
+    msg.className = "add-msg err";
+    msg.textContent = "Can't add right now — the shared board is unreachable. Check your connection and use the Retry link above.";
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = "Adding…";
+  msg.className = "add-msg";
+  msg.textContent = "";
+  setSync("busy", "Saving…");
+  var maxPos = TASKS.length;
+  sb(TABLE, {
+    method: "POST", prefer: "return=representation",
+    body: { title: title, tag: CATS[cat].label, done: false, position: maxPos }
+  }).then(function(rows){
+    btn.disabled = false;
+    btn.textContent = "Add task";
+    if(rows && rows.length) TASKS.push(rowToTask(rows[0]));
+    titleEl.value = "";
+    msg.className = "add-msg";
+    msg.textContent = "Added to " + CATS[cat].label + " — saved for the whole crew.";
+    activeFilter = "all";
+    if(hideDone){ hideDone = false; document.getElementById("clearDoneBtn").textContent = "Hide completed"; }
+    setSync("ok", "Shared board — saved for everyone with the link");
+    render();
+    setTimeout(function(){ msg.textContent = ""; }, 2600);
+  }).catch(function(err){
+    btn.disabled = false;
+    btn.textContent = "Add task";
+    msg.className = "add-msg err";
+    msg.textContent = "Couldn't save that task (" + (err.message || "network error") + "). It's not on the shared board yet — try again.";
+    setSyncError("Couldn't save — tap to retry syncing.");
+  });
+});
+
+document.getElementById("resetBtn").addEventListener("click", function(){
+  if(!online){
+    setSyncError("You're offline from the shared board — reset can't save. Tap to retry.");
+    return;
+  }
+  var btn = this;
+  btn.disabled = true;
+  setSync("busy", "Saving…");
+  sb(TABLE + "?done=eq.true", {
+    method: "PATCH", prefer: "return=representation", body: { done: false }
+  }).then(function(){
+    TASKS.forEach(function(t){ t.done = false; });
+    btn.disabled = false;
+    setSync("ok", "Shared board — saved for everyone with the link");
+    render();
+  }).catch(function(){
+    btn.disabled = false;
+    setSyncError("Couldn't reset the checks — tap to retry syncing.");
+  });
+});
+
+document.getElementById("clearDoneBtn").addEventListener("click", function(){
+  hideDone = !hideDone;
+  this.textContent = hideDone ? "Show completed" : "Hide completed";
+  render();
+});
+
+/* Pick up ticks the rest of the crew made while this tab was away. */
+document.addEventListener("visibilitychange", function(){
+  if(!document.hidden && loaded && online) loadChecklist(false);
+});
+
+loadChecklist(false);
+</script>
+</body>
+</html>
