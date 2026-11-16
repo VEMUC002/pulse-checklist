@@ -165,10 +165,17 @@
   @media (prefers-reduced-motion: reduce){
     *{transition:none!important;scroll-behavior:auto!important}
   }
+  .pulse-tools-link{
+    display:inline-block;margin-bottom:14px;font-size:12px;font-weight:700;
+    color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:8px;
+    border:1px solid var(--line);background:var(--surface);
+  }
+  .pulse-tools-link:hover{color:var(--text);border-color:var(--accent)}
 </style>
 </head>
 <body>
 <main class="wrap">
+  <a class="pulse-tools-link" href="https://vemuc002.github.io/pulse-hub/">← All Pulse tools</a>
   <div class="hero">
     <div class="hero-left">
       <div class="pulse-mark"><span class="pulse-dot"></span> Pulse</div>
